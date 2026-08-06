@@ -48,7 +48,7 @@ printf "${BLUE} Check -> $LOG_FILE${NC}\n"
 
 flag_check() {
  [[ -z $FLAG ]] && { printf "${YELLOW}Usage: $0 <option> <target>${NC}\n"; exit 2; }
- [[  $FLAG =~ ^(-c|-i|-e|-p|-full|-h)$ ]] || { printf "${RED}[!] Invalid option. Check -> [ -h ]${NC}\n"; exit 1; }
+ [[  $FLAG =~ ^(-c|-i|-e|-p|-full|-h|-u)$ ]] || { printf "${RED}[!] Invalid option. Check -> [ -h ]${NC}\n"; exit 1; }
  [[ $FLAG == "-h" ]] && banner
 }
 
@@ -75,6 +75,7 @@ printf "${YELLOW}       $: -e -> email scraping.    ${NC}\n "
 printf "${YELLOW}       $: -p -> phone scraping.    ${NC}\n "
 printf "${YELLOW}       $: -c -> cookie scraping.   ${NC}\n "
 printf "${YELLOW}       $: -i -> id scraping.       ${NC}\n "
+printf "${YELLOW}       $: -u -> url scraping.      ${NC}\n "
 printf "${YELLOW}       $: -full -> all in one.     ${NC}\n "
 printf "                                                 \n "
 printf "                                                 \n "
@@ -118,12 +119,25 @@ log "$OUTPUT"
 print_log
 }
 
+
+
+url_scrap() {
+ 
+printf "${YELLOW}[*] URL scraping started..${NC}\n"
+local OUTPUT=$( curl -sL "$TARGET" | grep -oP '(?<=href=")[^"]+' | sort -u | jq -R . | jq -s '{url $TARGET. links: .}' --arg url "$TARGET" 2> /dev/null || 
+{ error_log "[!] Error while searching for URLS."; exit 1; } )
+log "$OUTPUT"
+print_log
+}
+
+
 full_scan() {
 
 phone_scrap
 email_scrap
 id_scrap
 cookies_scrap
+url_scrap
 }
 
 
