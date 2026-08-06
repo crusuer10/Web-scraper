@@ -159,6 +159,9 @@ case $FLAG in
      -i)
         id_scrap
          ;;
+     -u)
+        url_scrap
+         ;;
   -full)
         full_scan
          ;;
